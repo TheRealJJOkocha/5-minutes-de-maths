@@ -295,9 +295,12 @@ function quiz(n, bonus = null) {
     } else {
       // touches utiles sur téléphone : les lettres de la réponse attendue, le carré et le signe moins
       const lettres = [...new Set((q.rep.match(/[a-z]/g) || []))];
-      const touches = q.t === "num" ? ["−"] : [...lettres, "²", "−"];
+      // exposant > 3 dans la réponse : bouton « ^ » (puissance), avec ² et ³ pour les cas courants
+      const grandExp = /\^([4-9]|\d\d)/.test(q.rep);
+      const touches = q.t === "num" ? ["−"] : [...lettres, "²", ...(/\^3/.test(q.rep) || grandExp ? ["³"] : []), ...(grandExp ? ["^"] : []), "−"];
       zone = `<label class="note" for="rep">Ta réponse</label>
-        <input class="ans" id="rep" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="${q.t === "num" ? "decimal" : "text"}" placeholder="${q.t === "num" ? "un nombre" : "ex. 3x^2 - 5x"}">
+        <input class="ans" id="rep" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="${q.t === "num" ? "decimal" : "text"}" placeholder="${q.t === "num" ? "un nombre" : "ex. 3x² − 5x"}">
+        <p class="note">Puissance : tape <b>^</b> puis l'exposant (x^5 = x<sup>5</sup>).</p>
         <div class="preview" id="prev"></div>
         <div class="keys">${touches.map(t => `<button class="key" data-t="${t}">${t}</button>`).join("")}</div>`;
     }
